@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 33
-        versionCode 4
-        versionName '1.0.3'
+        versionCode 1
+        versionName '1.0.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -55,7 +55,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.github.BillyMRX1'
             artifactId = 'MNR_Commons'
-            version = '1.0.3'
+            version = '1.0.0'
 
             afterEvaluate {
                 from components.release
