@@ -61,4 +61,5 @@ class RetrofitProvider(private val baseUrl : String, private val debug : Boolean
             if (debug) this@RetrofitProvider.httpLoggingInterceptor
             else HttpLoggingInterceptor.Level.NONE
     }
+
 }
