@@ -1,4 +1,4 @@
-package com.mnr.commons.extensions
+package com.mnr.commons.instances
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class RetrofitProvider(private val baseUrl : String, private val debug : Boolean) : KoinComponent {
+class RetrofitProvider(private val baseUrl : String, private val debug : Boolean,private val headerInterceptor: Interceptor?) : KoinComponent {
 
     private val httpLoggingInterceptor by inject<HttpLoggingInterceptor.Level>()
     private val context by inject<Context>()
@@ -21,6 +21,9 @@ class RetrofitProvider(private val baseUrl : String, private val debug : Boolean
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor(debug))
             .addInterceptor(chuckInterceptor())
+            .apply {
+                headerInterceptor?.let { addInterceptor(it) }
+            }
             .also { setTimeout(it) }
     }
 
