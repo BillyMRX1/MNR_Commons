@@ -1,7 +1,6 @@
 package com.mnr.commons.instances
 
 import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -11,7 +10,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class RetrofitProvider(private val baseUrl : String, private val debug : Boolean,private val headerInterceptor: Interceptor?) : KoinComponent {
+class RetrofitProvider(
+    private val baseUrl: String,
+    private val debug: Boolean,
+    private val headerInterceptor: Interceptor?,
+    private val chuckerInterceptor: Interceptor?
+) : KoinComponent {
 
     private val httpLoggingInterceptor by inject<HttpLoggingInterceptor.Level>()
     private val context by inject<Context>()
@@ -20,8 +24,8 @@ class RetrofitProvider(private val baseUrl : String, private val debug : Boolean
     private val httpClient: OkHttpClient.Builder by lazy {
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor(debug))
-            .addInterceptor(chuckInterceptor())
             .apply {
+                chuckerInterceptor?.let { addInterceptor(it) }
                 headerInterceptor?.let { addInterceptor(it) }
             }
             .also { setTimeout(it) }
@@ -35,7 +39,7 @@ class RetrofitProvider(private val baseUrl : String, private val debug : Boolean
             .build()
     }
 
-    fun request(service : Class<Any>) {
+    fun request(service: Class<Any>) {
         retrofit.create(service)
     }
 
@@ -46,20 +50,7 @@ class RetrofitProvider(private val baseUrl : String, private val debug : Boolean
             .callTimeout(20, TimeUnit.SECONDS)
     }
 
-    private fun chuckInterceptor(): Interceptor {
-        return try {
-            ChuckerInterceptor(context)
-        } catch (exception: Exception) {
-            return Interceptor { chain ->
-                val request = chain.request()
-                val response = chain.proceed(request)
-
-                response
-            }
-        }
-    }
-
-    private fun loggingInterceptor(debug : Boolean) = HttpLoggingInterceptor().apply {
+    private fun loggingInterceptor(debug: Boolean) = HttpLoggingInterceptor().apply {
         level =
             if (debug) this@RetrofitProvider.httpLoggingInterceptor
             else HttpLoggingInterceptor.Level.NONE
