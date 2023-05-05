@@ -1,6 +1,5 @@
 package com.mnr.commons.instances
 
-import android.content.Context
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -18,7 +17,6 @@ class RetrofitProvider(
 ) : KoinComponent {
 
     private val httpLoggingInterceptor by inject<HttpLoggingInterceptor.Level>()
-    private val context by inject<Context>()
     private val gson = GsonConverterFactory.create()
 
     private val httpClient: OkHttpClient.Builder by lazy {
